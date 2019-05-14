@@ -2,7 +2,6 @@ package com.example.kin16.mycalendar;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,14 +9,9 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class AddPlan extends Activity {
-    Calendar cal;
-
     TextView cancel;
     TextView enroll;
 
@@ -25,6 +19,8 @@ public class AddPlan extends Activity {
     TextView planDate;
     TextView planLocation;
     TextView planMemo;
+
+    String pYear, pMonth, pDay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +68,9 @@ public class AddPlan extends Activity {
             public void onDateSet(DatePicker view, int y, int m, int d) {
                 // TODO Auto-generated method stub
                 planDate.setText(y + "-" + (m + 1) + "-" + d);
+                pYear = Integer.toString(y);
+                pMonth = Integer.toString((m + 1));
+                pDay = Integer.toString(d);
             }
         }, year, month, day);
 
@@ -82,6 +81,17 @@ public class AddPlan extends Activity {
 
     private void enrollment(){
         if(!TextUtils.isEmpty(planTitle.getText()) && !TextUtils.isEmpty(planDate.getText())){
+            DB_OpenHelper db = new DB_OpenHelper(this);
+            db.open();
+            db.insertColumn(
+                    planTitle.getText().toString(),
+                    planDate.getText().toString(),
+                    pYear,
+                    pMonth,
+                    pDay,
+                    planLocation.getText().toString(),
+                    planMemo.getText().toString()
+            );
             Toast.makeText(getApplicationContext(), planTitle.getText().toString() + " 등록!", Toast.LENGTH_LONG).show();
             finish();
         }
