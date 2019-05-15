@@ -1,4 +1,4 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.DB;
 
 import android.provider.BaseColumns;
 
@@ -20,7 +20,7 @@ public final class DB_Table {
                         +YEAR+" text not null , "
                         +MONTH+" text not null , "
                         +DAY+" text not null , "
-                        +LOCATION+" text , "
-                        +MEMO+" text );";
+                        +LOCATION+" text not null, "
+                        +MEMO+" text not null);";
     }
 }

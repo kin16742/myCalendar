@@ -1,4 +1,4 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.DB;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -28,17 +28,21 @@ public class DB_OpenHelper {
             onCreate(db);
         }
     }
+
     public DB_OpenHelper(Context context){
         this.mCtx = context;
     }
+
     public DB_OpenHelper open() throws SQLException {
         mDBHelper = new DatabaseHelper(mCtx, DATABASE_NAME, null, DATABASE_VERSION);
         mDB = mDBHelper.getWritableDatabase();
         return this;
     }
+
     public void close(){
         mDB.close();
     }
+
     public long insertColumn(String title, String date, String year, String month, String day, String location, String memo){
         ContentValues values = new ContentValues();
         values.put(DB_Table.CreateDB.TITLE, title);
@@ -50,6 +54,7 @@ public class DB_OpenHelper {
         values.put(DB_Table.CreateDB.MEMO, memo);
         return mDB.insert(DB_Table.CreateDB._TABLENAME, null, values);
     }
+
     public Cursor selectColumns(){
         return mDB.query(DB_Table.CreateDB._TABLENAME, null, null, null, null, null, null);
     }

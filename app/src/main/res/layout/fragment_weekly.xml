@@ -18,7 +18,7 @@
     <TextView
         android:id="@+id/tv_W"
         android:layout_marginTop="20dp"
-        android:background="@android:color/white"
+        android:background="#50bcdf"
         android:gravity="center_vertical"
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
@@ -30,10 +30,22 @@
 
     <ListView
         android:id="@+id/lv_W"
-        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"></ListView>
 
-    </ListView>
+    <TextView
+        android:id="@+id/addPlan_W"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#50bcdf"
+        android:gravity="center|right"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:text="새로운 일정 추가" />
 </LinearLayout>
 

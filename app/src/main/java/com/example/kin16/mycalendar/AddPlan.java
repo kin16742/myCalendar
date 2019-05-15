@@ -2,12 +2,16 @@ package com.example.kin16.mycalendar;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.kin16.mycalendar.DB.DB_OpenHelper;
+import com.example.kin16.mycalendar.Listener.OnSingleClickListener;
 
 import java.util.Calendar;
 
@@ -27,7 +31,6 @@ public class AddPlan extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addplan);
 
-
         cancel = findViewById(R.id.cancel);
         enroll = findViewById(R.id.enroll);
 
@@ -36,21 +39,36 @@ public class AddPlan extends Activity {
         planLocation = findViewById(R.id.planLocation);
         planMemo = findViewById(R.id.planMemo);
 
-        cancel.setOnClickListener(new View.OnClickListener(){
+        Intent intent = getIntent();
+
+        int y = intent.getExtras().getInt("year");
+        if(y != 0) {
+            int m = intent.getExtras().getInt("month");
+            int d = intent.getExtras().getInt("day");
+
+            planDate.setText(y + "-" + (m + 1) + "-" + d);
+            pYear = Integer.toString(y);
+            pMonth = Integer.toString((m + 1));
+            pDay = Integer.toString(d);
+        }
+
+        cancel.setOnClickListener(new OnSingleClickListener(){
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 finish();
             }
         });
-        enroll.setOnClickListener(new View.OnClickListener(){
+
+        enroll.setOnClickListener(new OnSingleClickListener(){
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 enrollment();
             }
         });
-        planDate.setOnClickListener(new View.OnClickListener(){
+
+        planDate.setOnClickListener(new OnSingleClickListener(){
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
                 DialogDatePicker();
             }
         });
@@ -80,7 +98,8 @@ public class AddPlan extends Activity {
     }
 
     private void enrollment(){
-        if(!TextUtils.isEmpty(planTitle.getText()) && !TextUtils.isEmpty(planDate.getText())){
+        if(!TextUtils.isEmpty(planTitle.getText()) && !TextUtils.isEmpty(planDate.getText())
+                && !TextUtils.isEmpty(planLocation.getText()) && !TextUtils.isEmpty(planMemo.getText())){
             DB_OpenHelper db = new DB_OpenHelper(this);
             db.open();
             db.insertColumn(
@@ -92,7 +111,8 @@ public class AddPlan extends Activity {
                     planLocation.getText().toString(),
                     planMemo.getText().toString()
             );
-            Toast.makeText(getApplicationContext(), planTitle.getText().toString() + " 등록!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), pYear + "년 " + pMonth + "월 " + pDay + "일에 새로운 일정 '"
+                    + planTitle.getText().toString() + "' 등록!", Toast.LENGTH_LONG).show();
             finish();
         }
     }

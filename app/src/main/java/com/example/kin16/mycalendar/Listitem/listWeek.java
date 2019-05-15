@@ -1,4 +1,4 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.Listitem;
 
 public class listWeek {
     private String Title;

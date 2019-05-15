@@ -6,9 +6,19 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.example.kin16.mycalendar.Fragment.Fragment_Daily;
+import com.example.kin16.mycalendar.Fragment.Fragment_Monthly;
+import com.example.kin16.mycalendar.Fragment.Fragment_Weekly;
+import com.example.kin16.mycalendar.Listener.OnSingleClickListener;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 
 public class MainActivity extends AppCompatActivity {
     TextView plan;
@@ -17,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout fl;
 
     Intent sIntent, pIntent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +72,32 @@ public class MainActivity extends AppCompatActivity {
         startActivity(sIntent);
 
         plan = findViewById(R.id.plan);
-        plan.setOnClickListener(new View.OnClickListener(){
+        plan.setOnClickListener(new OnSingleClickListener(){
             @Override
-            public void onClick(View view) {
+            public void onSingleClick(View view) {
+                pIntent.putExtra("year",0);
                 startActivity(pIntent);
             }
         });
 
         callFragment(0);
+
+        File f = new File(getFilesDir(), "lastFragment.txt");
+        FileReader fr = null;
+        try{
+            if(f.exists()){
+                fr = new FileReader(f);
+                int lastFragmentInt = fr.read();
+                char lastFragmentChar = (char)lastFragmentInt;
+                int curItem = Integer.parseInt(lastFragmentChar + "");
+                Log.d("확인", lastFragmentInt + " " + lastFragmentChar + " " + curItem);
+                tl.getTabAt(curItem).select();
+                if(fr != null) fr.close();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void callFragment(int num){
@@ -95,7 +122,24 @@ public class MainActivity extends AppCompatActivity {
                 transaction.commit();
                 break;
         }
-
     }
 
+    @Override
+    protected void onDestroy() {
+        File f = new File(getFilesDir(), "lastFragment.txt");
+        FileWriter fw = null;
+        try {
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            fw = new FileWriter(f);
+            fw.write(Integer.toString(tl.getSelectedTabPosition()));
+            if(fw != null) fw.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        super.onDestroy();
+    }
 }

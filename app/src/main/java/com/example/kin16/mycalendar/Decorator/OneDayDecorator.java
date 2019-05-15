@@ -1,4 +1,4 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.Decorator;
 
 import android.graphics.Color;
 import android.graphics.Typeface;

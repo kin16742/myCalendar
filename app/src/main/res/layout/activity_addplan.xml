@@ -28,9 +28,10 @@
             android:layout_height="match_parent"
             android:layout_weight="8"
             android:gravity="center"
-            android:text="새로운 스케줄"
+            android:text="새 일정"
             android:textColor="@android:color/black"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/enroll"
@@ -66,6 +67,7 @@
                     android:layout_marginTop="25dp"
                     android:background="@android:color/white"
                     android:hint="제목"
+                    android:maxLength="16"
                     android:maxLines="1"
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"
@@ -99,6 +101,7 @@
                     android:layout_marginTop="25dp"
                     android:background="@android:color/white"
                     android:hint="위치"
+                    android:maxLength="16"
                     android:maxLines="1"
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"
@@ -116,6 +119,7 @@
                     android:background="@android:color/white"
                     android:gravity="top"
                     android:hint="메모"
+                    android:maxLength="50"
                     android:maxLines="9"
                     android:paddingBottom="10dp"
                     android:paddingLeft="10dp"

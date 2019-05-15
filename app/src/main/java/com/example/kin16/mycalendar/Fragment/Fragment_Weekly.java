@@ -1,5 +1,6 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.Fragment;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -10,10 +11,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.kin16.mycalendar.Adapter.WeeklyAdapter;
+import com.example.kin16.mycalendar.AddPlan;
+import com.example.kin16.mycalendar.DB.DB_OpenHelper;
+import com.example.kin16.mycalendar.Decorator.EventDecorator;
+import com.example.kin16.mycalendar.Decorator.OneDayDecorator;
+import com.example.kin16.mycalendar.Decorator.SaturdayDecorator;
+import com.example.kin16.mycalendar.Decorator.SundayDecorator;
+import com.example.kin16.mycalendar.Listener.OnSingleClickListener;
+import com.example.kin16.mycalendar.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -26,15 +38,18 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 public class Fragment_Weekly extends Fragment {
-    private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
-    MaterialCalendarView cv_w;
-    DB_OpenHelper mDbOpenHelper;
-    List<String> arrayData;
-    TextView tv_w;
-
+    private MaterialCalendarView cv_w;
+    private TextView tv_w, addPlan_w;
     private ListView lv_w;
+
+    private int dY, dM, dD;
+
+    private DB_OpenHelper mDbOpenHelper;
+
+    private List<String> arrayData;
     private WeeklyAdapter wa;
 
+    private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
 
     public Fragment_Weekly(){}
 
@@ -45,6 +60,7 @@ public class Fragment_Weekly extends Fragment {
         lv_w = view.findViewById(R.id.lv_W);
         cv_w = view.findViewById(R.id.cv_W);
         tv_w = view.findViewById(R.id.tv_W);
+        addPlan_w = view.findViewById(R.id.addPlan_W);
 
         cv_w.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -64,39 +80,38 @@ public class Fragment_Weekly extends Fragment {
                 String dStr = d.substring(12,d.length() - 1);
                 Log.d("주간달력 체크용", dStr);
                 String[] time = dStr.split("-");
-                int pYear = Integer.parseInt(time[0]);
-                int pMonth = Integer.parseInt(time[1]);
-                int pDay = Integer.parseInt(time[2]);
+                dY = Integer.parseInt(time[0]);
+                dM = Integer.parseInt(time[1]);
+                dD = Integer.parseInt(time[2]);
 
-                wa = new WeeklyAdapter();
-                arrayData = new ArrayList<>();
-                lv_w.setAdapter(wa);
-                searchPlan(pYear + "-" + (pMonth + 1) + "-" + pDay);
-                for(int i=0;i<arrayData.size();i++){
-                    wa.addLW(arrayData.get(i));
-                }
+                PlanView();
 
-                tv_w.setText(pYear + "년 " + (pMonth + 1) + "월 " + pDay + "일의 일정");
+                tv_w.setText(dY + "년 " + (dM + 1) + "월 " + dD + "일의 일정");
+            }
+        });
+
+        addPlan_w.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(View v) {
+                Intent pIntent = new Intent(getActivity(), AddPlan.class);
+
+                pIntent.putExtra("year",dY);
+                pIntent.putExtra("month",dM);
+                pIntent.putExtra("day",dD);
+
+                startActivity(pIntent);
             }
         });
 
         Calendar today = Calendar.getInstance();
 
-        int pYear = today.get(Calendar.YEAR);
-        int pMonth = today.get(Calendar.MONTH);
-        int pDay = today.get(Calendar.DAY_OF_MONTH);
+        dY = today.get(Calendar.YEAR);
+        dM = today.get(Calendar.MONTH);
+        dD = today.get(Calendar.DAY_OF_MONTH);
 
         cv_w.setDateSelected(today,true);
 
-        wa = new WeeklyAdapter();
-        arrayData = new ArrayList<>();
-        lv_w.setAdapter(wa);
-        searchPlan(pYear + "-" + (pMonth + 1) + "-" + pDay);
-        for(int i=0;i<arrayData.size();i++){
-            wa.addLW(arrayData.get(i));
-        }
-
-        tv_w.setText(pYear + "년 " + (pMonth + 1) + "월 " + pDay + "일의 일정");
+        tv_w.setText(dY + "년 " + (dM + 1) + "월 " + dD + "일의 일정");
 
         return view;
     }
@@ -105,9 +120,24 @@ public class Fragment_Weekly extends Fragment {
     public void onResume() {
         super.onResume();
 
+        PlanView();
+
         arrayData = new ArrayList<>();
         searchDate();
         new ApiSimulator(arrayData).executeOnExecutor(Executors.newSingleThreadExecutor());
+    }
+
+    private void PlanView(){
+        wa = new WeeklyAdapter();
+        arrayData = new ArrayList<>();
+        lv_w.setAdapter(wa);
+        searchPlan(dY + "-" + (dM + 1) + "-" + dD);
+        for(int i=0;i<arrayData.size();i++){
+            wa.addLW(arrayData.get(i));
+        }
+        if(arrayData.size() == 0){
+            wa.addLW("일정이 없습니다.");
+        }
     }
 
     private class ApiSimulator extends AsyncTask<Void, Void, List<CalendarDay>> {
@@ -149,7 +179,6 @@ public class Fragment_Weekly extends Fragment {
         mDbOpenHelper.open();
 
         Cursor iCursor = mDbOpenHelper.selectColumns();
-        iCursor.moveToFirst();
 
         if(iCursor != null) {
             while (iCursor.moveToNext()) {
@@ -164,7 +193,6 @@ public class Fragment_Weekly extends Fragment {
         mDbOpenHelper.open();
 
         Cursor iCursor = mDbOpenHelper.selectColumns();
-        iCursor.moveToFirst();
 
         if(iCursor != null) {
             while (iCursor.moveToNext()) {

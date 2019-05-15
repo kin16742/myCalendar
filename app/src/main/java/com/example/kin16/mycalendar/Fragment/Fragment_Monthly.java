@@ -1,5 +1,6 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.Fragment;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -11,9 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.kin16.mycalendar.AddPlan;
+import com.example.kin16.mycalendar.DB.DB_OpenHelper;
+import com.example.kin16.mycalendar.Decorator.EventDecorator;
+import com.example.kin16.mycalendar.Decorator.OneDayDecorator;
+import com.example.kin16.mycalendar.Decorator.SaturdayDecorator;
+import com.example.kin16.mycalendar.Decorator.SundayDecorator;
+import com.example.kin16.mycalendar.Decorator.WeekdayDecorator;
+import com.example.kin16.mycalendar.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.CalendarMode;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,10 +31,15 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 public class Fragment_Monthly extends Fragment {
+    private MaterialCalendarView cv_m;
+
+    private int dY, dM, dD;
+
+    private DB_OpenHelper mDbOpenHelper;
+
+    private List<String> arrayData;
+
     private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
-    MaterialCalendarView cv_m;
-    DB_OpenHelper mDbOpenHelper;
-    List<String> arrayData;
 
     public Fragment_Monthly(){}
 
@@ -45,6 +60,27 @@ public class Fragment_Monthly extends Fragment {
                 new WeekdayDecorator(),
                 oneDayDecorator
         );
+
+        cv_m.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                String d = date.toString();
+                String dStr = d.substring(12,d.length() - 1);
+
+                String[] time = dStr.split("-");
+                dY = Integer.parseInt(time[0]);
+                dM = Integer.parseInt(time[1]);
+                dD = Integer.parseInt(time[2]);
+
+                Intent pIntent = new Intent(getActivity(), AddPlan.class);
+
+                pIntent.putExtra("year",dY);
+                pIntent.putExtra("month",dM);
+                pIntent.putExtra("day",dD);
+
+                startActivity(pIntent);
+            }
+        });
 
         return view;
     }
@@ -80,7 +116,6 @@ public class Fragment_Monthly extends Fragment {
                 CalendarDay day = CalendarDay.from(calendar);
                 dates.add(day);
             }
-
             return dates;
         }
 
@@ -91,12 +126,12 @@ public class Fragment_Monthly extends Fragment {
             cv_m.addDecorator(new EventDecorator(Color.RED, calendarDays, getActivity()));
         }
     }
+
     public void searchDate(){
         mDbOpenHelper = new DB_OpenHelper(getActivity());
         mDbOpenHelper.open();
 
         Cursor iCursor = mDbOpenHelper.selectColumns();
-        iCursor.moveToFirst();
 
         if(iCursor != null) {
             while (iCursor.moveToNext()) {

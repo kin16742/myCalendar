@@ -1,4 +1,4 @@
-package com.example.kin16.mycalendar;
+package com.example.kin16.mycalendar.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,10 +7,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.kin16.mycalendar.Listitem.listWeek;
+import com.example.kin16.mycalendar.R;
+
 import java.util.ArrayList;
 
 public class WeeklyAdapter extends BaseAdapter{
     private ArrayList<listWeek> lw = new ArrayList<listWeek>();
+
     public WeeklyAdapter(){}
 
     public int getCount(){
