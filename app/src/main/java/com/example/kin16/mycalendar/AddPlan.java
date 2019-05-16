@@ -98,6 +98,19 @@ public class AddPlan extends Activity {
     }
 
     private void enrollment(){
+        if(TextUtils.isEmpty(planTitle.getText())){
+            Toast.makeText(getApplicationContext(), "제목을 입력해주세요!!", Toast.LENGTH_LONG).show();
+        }
+        else if(TextUtils.isEmpty(planDate.getText())){
+            Toast.makeText(getApplicationContext(), "날짜를 선택해주세요!!", Toast.LENGTH_LONG).show();
+        }
+        else if(TextUtils.isEmpty(planLocation.getText())){
+            Toast.makeText(getApplicationContext(), "위치를 입력해주세요!!", Toast.LENGTH_LONG).show();
+        }
+        else if(TextUtils.isEmpty(planMemo.getText())){
+            Toast.makeText(getApplicationContext(), "메모를 입력해주세요!!", Toast.LENGTH_LONG).show();
+        }
+
         if(!TextUtils.isEmpty(planTitle.getText()) && !TextUtils.isEmpty(planDate.getText())
                 && !TextUtils.isEmpty(planLocation.getText()) && !TextUtils.isEmpty(planMemo.getText())){
             DB_OpenHelper db = new DB_OpenHelper(this);
